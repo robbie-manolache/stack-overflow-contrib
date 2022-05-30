@@ -2,6 +2,7 @@
 from datetime import datetime
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 from date_expander import DateExpander
 
 
@@ -37,12 +38,16 @@ class Simulator(DateExpander):
         self.n_sims = n_sims
         self.results = None
         
-    def run(self):
+    def run(self, show_progress=True):
         
-        results = []
         methods = ["jwdink", "TedPetrou", "Gen", "Gen2", "robbie"]
-                
-        for n in range(self.n_sims):
+        results = []
+        
+        sim_iter = range(self.n_sims)
+        if show_progress:
+            sim_iter = tqdm(sim_iter)
+                        
+        for n in sim_iter:
             
             sim_record = {}
             
@@ -55,4 +60,24 @@ class Simulator(DateExpander):
             results.append(sim_record)
         
         self.results = results
-                          
+        
+    def get_results(self):
+        
+        if self.results is None:
+            raise Exception("There are no results! "+
+                            "Please run simulation first!")
+        
+        return(pd.DataFrame(self.results).applymap(
+            lambda x: x.total_seconds()
+        ))
+
+
+if __name__ == "__main__":
+    
+    sim = Simulator(
+        n_rows=500,
+        n_periods=500,
+        n_sims=5
+    )
+    sim.run()
+    print(sim.get_results())                 
