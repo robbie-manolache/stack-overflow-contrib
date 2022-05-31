@@ -153,3 +153,8 @@ cython_debug/
 
 # dev-only folder
 dev/
+
+# Azure ML
+*.amltmp
+.ipynb_aml_checkpoints
+.amlignore
